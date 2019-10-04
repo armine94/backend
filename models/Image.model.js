@@ -8,15 +8,24 @@ const ImageSchema = new Schema({
         required: true
     },
     src: {
-	type: String,
-	required: true
+        type: String,
+        required: true
     },
     date: {
         type: Date,
         default: Date.now
     },
     metadata: {
-	type: String
+        SourceFile: String,
+        FileName: String,
+        Directory: String,
+        FileSize: String,
+        FilePermissions: String,
+        FileTypeExtension: String,
+        ImageWidth: String,
+        ImageHeight: String,
+        ImageSize: String,
+        Megapixels: String,
     }
 });
 

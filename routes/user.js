@@ -13,23 +13,6 @@ const fs = require('fs');
 
 const User = require('../models/User.model');
 
-router.post('/upload',function(req, res) {
-    
-    upload(req, res, function (err) {
-     
-        if (err instanceof multer.MulterError) {
-            return res.status(500).json(err)
-          // A Multer error occurred when uploading.
-        } else if (err) {
-            return res.status(500).json(err)
-          // An unknown error occurred when uploading.
-        } 
-        //console.log(req);
-        return res.status(200).send(req.file)
-        // Everything went fine.
-      })
-});
-
 router.post('/register', function(req, res) {
 
     const { errors, isValid } = validateRegisterInput(req.body);
