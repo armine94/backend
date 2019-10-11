@@ -6,10 +6,6 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
-var multer = require('multer');
-var cors = require('cors');
-const exif = require('exif-parser');
-const fs = require('fs');
 
 const User = require('../models/User.model');
 

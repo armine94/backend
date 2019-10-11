@@ -26,6 +26,9 @@ const ImageSchema = new Schema({
         ImageHeight: String,
         ImageSize: String,
         Megapixels: String,
+    },
+    description: {
+        type: String,
     }
 });
 
