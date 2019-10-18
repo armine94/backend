@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
@@ -25,18 +24,12 @@ router.post('/register', function(req, res) {
             });
         }
         else {
-            const avatar = gravatar.url(req.body.email, {
-                s: '200',
-                r: 'pg',
-                d: 'mm'
-            });
             const newUser = new User({
                 name: req.body.name,
                 email: req.body.email,
                 password: req.body.password,
-                avatar
             });
-            
+
             bcrypt.genSalt(10, (err, salt) => {
                 if(err) console.error('There was an error', err);
                 else {
@@ -48,7 +41,7 @@ router.post('/register', function(req, res) {
                                 .save()
                                 .then(user => {
                                     res.json(user)
-                                }); 
+                                });
                         }
                     });
                 }
@@ -80,15 +73,17 @@ router.post('/login', (req, res) => {
                             const payload = {
                                 id: user.id,
                                 name: user.name,
-                                avatar: user.avatar
+                                email: user.email
                             }
                             jwt.sign(payload, 'secret', {
                                 expiresIn: 3600
                             }, (err, token) => {
-                                if(err) console.error('There is some error in token', err);
+                                if(err) console.log('There is some error in token', err);
                                 else {
+                                    User.updateOne({email},{token},{runValidators: true}).exec();
                                     res.json({
                                         success: true,
+                                        email: user.email,
                                         token: `Bearer ${token}`
                                     });
                                 }
@@ -100,6 +95,15 @@ router.post('/login', (req, res) => {
                         }
                     });
         });
+});
+
+router.post('/logout', (req, res) => {
+    const email = req.body.email;
+    User.updateOne({email},{token:""},{runValidators: true}).exec();
+    res.json({
+      success: true,
+    })
+
 });
 
 router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) => {

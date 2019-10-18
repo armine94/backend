@@ -1,70 +1,30 @@
+const audio = require('../controlers/audio.controler');
 const express = require('express');
 const router = express.Router();
-var multer = require('multer');
-const Exif = require("simple-exiftool");
-const Audio = require('../models/Audio.model');
 
-var path;
-var name;
+router.get('/audio', async function(req, res) {  
+	const { pageNumber, size } = req.query;
+	let response;
+	if(pageNumber <= 0) {
+		response = {"error" : true,"message" : "invalid page number, should start with 1"};
+	} else {
+		response = audio.findAudio(pageNumber, size);
+	}
+	response.then(response => {
+	return res.json(response); 
+		
+	})
+	
+});
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) { 
-    cb(null, 'public/audios');                  
-  },
-  filename: function (req, file, cb) { 
-    name =  Date.now() + '-' +file.originalname;
-    cb(null, name);
-    path = "./public/audios/" + name;  
-  }
-})
+router.post('/audio',async function(req, res) {
+	const response =await audio.addAudio(req, res);  
+	res.json(response); 
+			
+});
 
-const upload = multer({ storage: storage }).array('file')
-
-router.post('/ausio', function(req, res) {        
-  upload(req, res,  async function (err) {  
-    
-    if (err instanceof multer.MulterError) {
-        return res.status(500).json(err)      // A Multer error occurred when uploading.
-    } else if (err) {
-        return res.status(500).json(err)      // An unknown error occurred when uploading.
-    } 
-    
-    Exif(path, (error, metadata) => {
-      if (error) {
-        console.log(error);
-      }
-
-      console.log(metadata);
-      
-      var key = [];
-      key[0] = "SourceFile";
-      key[1] = "FileName";
-      key[2] = "Directory";
-      key[3] = "FileSize";
-      key[4] = "FilePermissions";
-      key[5] = "FileTypeExtension";
-
-      const audio = new Audio({
-        name: name,
-        src: path,
-      });
-
-      if(req.body.description){
-        audio.description = req.body.description;
-      }
-
-      for(var i = 0 ; i < 6; i++) {
-        audio.metadata[key[i]] = metadata[key[i]];
-      }
-
-      audio
-      .save()
-      .then(text => {
-         // console.log(image);
-      });
-    });  
-    return res.status(200).send(req.file)    // Everything went fine.
-  })
+router.delete('/audio',function(req, res){
+	  //delete file
 });
 
 module.exports = router;

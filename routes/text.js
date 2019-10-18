@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-var multer = require('multer');
+const multer = require('multer');
 const Exif = require("simple-exiftool");
 const TextFile = require('../models/TextFile.model');
 const fs = require('fs');
@@ -48,7 +48,6 @@ router.get('/text', function(req, res) {
   TextFile.find({},{},query,async function(err,data) {
 
   }).then(async (data )=> {
-    console.log("aaaaaaaaaaaaaaaaaaaa");
     const filesName = [];
     const filesData = [];
     let i = 0;
@@ -59,34 +58,22 @@ router.get('/text', function(req, res) {
       const filesData_1 = await new Promise((resolve, reject) => {
         for (i = 0; i < 1; ++i) {
           filesName[i] = data[i].metadata.SourceFile;
-          console.log(filesName[i]);
           pdfParser.loadPDF(filesName[0]);
           var file = fs.createReadStream('./public/texts/1.pdf');
           var stat = fs.statSync('./public/texts/1.pdf');
-          console.log(stat);
           resolve(file);
-          // fs.readFile("../public/texts/1.pdf",  function (err, data1) {
-          //   console.log(err);
-          //        filesData[p] = data1;
-          //        p++;
-          //         if(p == 5){
-          //           resolve(filesData);
-          //         }ole.log(response);    
-          //     })
         }
       });
-      console.log(filesData_1.length);
       response = { "error": false, "message": data, "files": filesData_1 };
       res.json(response);
     }
     catch (e) {
       response = { "error": true, "message": "Error fetching data" };
-      console.log("ccccccccccccccccccccccccccc");
     }
   })
 })
 
-router.post('/text', function(req, res) {          
+router.post('/text', function(req, res) { 
   upload(req, res,  async function (err) {      
     if (err instanceof multer.MulterError) {
         return res.status(500).json(err)      // A Multer error occurred when uploading.
@@ -99,9 +86,7 @@ router.post('/text', function(req, res) {
         console.log(error);
       }
 
-      console.log(metadata);
-      
-      var key = [];
+      const key = [];
       key[0] = "SourceFile";
       key[1] = "FileName";
       key[2] = "Directory";
@@ -118,7 +103,7 @@ router.post('/text', function(req, res) {
         text.description = req.body.description;
       }
 
-      for(var i = 0 ; i < 6; i++) {
+      for(let i = 0 ; i < 6; i++) {
         text.metadata[key[i]] = metadata[key[i]];
       }
 

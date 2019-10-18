@@ -26,6 +26,7 @@
     "pdf2json": "^1.1.8",
     "pdfreader": "^1.0.6",
     "simple-exiftool": "^1.1.0",
+    "universal-cookie-express": "^4.0.1",
     "validator": "^10.4.0"
   }
 }

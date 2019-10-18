@@ -28,6 +28,6 @@ const AudioSchema = new Schema({
     }
 });
 
-const Audio = mongoose.model('ausios', AudioSchema);
+const Audio = mongoose.model('audios', AudioSchema);
 
 module.exports = Audio;
