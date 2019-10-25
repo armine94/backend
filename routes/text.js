@@ -110,7 +110,6 @@ router.post('/text', function(req, res) {
       text
       .save()
       .then(text => {
-         // console.log(image);
       });
     });  
     return res.status(200).send(req.file)    // Everything went fine.

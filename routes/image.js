@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/image', async function(req, res) {
+console.log(req)
 	const { pageNumber, size } = req.query;
 	let response;
 	if(pageNumber <= 0) {

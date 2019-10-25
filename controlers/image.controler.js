@@ -23,8 +23,6 @@ const upload = multer({ storage: storage }).array('file')
 
 function addImage(req, res) {
     upload(req, res,  async function (err) {
-		console.log(req.body.description);
-
 		if (err instanceof multer.MulterError) {
             return response = { "error": true, "message": err };  // A Multer error occurred when uploading.
 		} else if (err) {
@@ -35,7 +33,6 @@ function addImage(req, res) {
 				console.log(error);
 			}
 			const key = [];
-			key[0] = "Author";
 			key[1] = "SourceFile";
 			key[2] = "FileName";
 			key[3] = "Directory";
@@ -56,10 +53,9 @@ function addImage(req, res) {
 				image.description = req.body.description;
 			}
 
-			for(let i = 0 ; i < 11; i++) {
+			for(let i = 1 ; i < 11; i++) {
 				image.metadata[key[i]] = metadata[key[i]];
 			}
-
 			image
 			.save()
 			.then(image => {
@@ -78,30 +74,20 @@ function findImage(pageNumber, size) {
     return Image.find({},{},query,async function(err,data) {
     })
     .then(async (data )=> {
-        const filesName = [];
-        const filesData = [];
-        try {
-            let response ;
-            const filesData_1 = await new Promise((resolve, reject) => {
-                for (let i = 0; i < data.length; ++i) {
-                    filesName[i] = data[i].metadata.SourceFile;
-                    fs.readFile(filesName[i], function (err, fileData) {
-                        if (err)
-                        return reject(err);
-                        filesData[i] = fileData;
-                        if (i == 4) {
-                        return resolve(filesData);
-                        }
-                    });
-                }
-			});
-
-            return response = { "error": false, "message": data, "files": filesData_1 };
-        }
-        catch (e) {
-            return response = { "error": true, "message": "Error fetching data" };
-        }
-    })
+		const imageName = [];
+		const metadata = [];
+		const path = [];
+		data && data.length && data.forEach((element, index) => {
+			imageName.push(element.name);
+			metadata.push(element.metadata);
+			const pathFile = "http://localhost:54545/static/images/" + element.metadata.FileName;
+			path.push(pathFile);
+		});
+		return { error: false, name: imageName, metadatas: metadata, path: path };
+	})
+	.catch(err => {
+		return { error: true, message: "Error fetching data" };
+	})
 }
 
 

@@ -27,7 +27,6 @@ const upload = multer({ storage: storage }).array('file')
 function addAudio(req, res) {
 
   upload(req, res,  async function (err) {
-    console.log("upload");
     if (err instanceof multer.MulterError) {
         return res.status(500).json(err)      // A Multer error occurred when uploading.
     } else if (err) {

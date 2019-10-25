@@ -1,2 +1,3 @@
-const DN_HOST = 'localhost';
-const DN_PORT = 5000;
+const port = 54545;
+
+module.exports.port = port;
