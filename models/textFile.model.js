@@ -2,12 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const AudioSchema = new Schema({
+const TextFileSchema = new Schema({
     name: {
-        type: String,
-        required: true
-    },
-    src: {
         type: String,
         required: true
     },
@@ -28,6 +24,6 @@ const AudioSchema = new Schema({
     }
 });
 
-const Audio = mongoose.model('audios', AudioSchema);
+const TextFile = mongoose.model('texts', TextFileSchema);
 
-module.exports = Audio;
+module.exports = TextFile;

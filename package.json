@@ -1,11 +1,11 @@
 {
     "name": "backend",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "",
     "main": "app.js",
     "scripts": {
-        "dev": "nodemon app.js",
-        "start": "nodemon app.js",
+        "dev": "nodemon app.js debug",
+        "start": "node app.js off",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -19,22 +19,23 @@
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.3",
         "cookie-parser": "^1.4.4",
+        "connect-mongodb-session": "^2.2.0",
         "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
         "exif-parser": "^0.1.12",
         "express": "^4.17.1",
         "express-session": "^1.17.0",
         "form-data": "^2.5.1",
         "http-proxy-middleware": "^0.20.0",
-        "jsonwebtoken": "^8.3.0",
+        "log4js": "^5.3.0",
         "mongoose": "^5.2.4",
         "multer": "^1.4.2",
-        "nodemon": "^1.19.4",
         "passport": "^0.4.0",
         "passport-jwt": "^4.0.0",
         "simple-exiftool": "^1.1.0",
         "validator": "^10.4.0"
     },
     "devDependencies": {
-        "log4js": "^5.3.0"
+        "nodemon": "^1.19.4"
     }
 }

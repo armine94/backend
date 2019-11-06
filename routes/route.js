@@ -6,13 +6,11 @@ const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 const audio = require('../controlers/audio.controler');
 const image = require('../controlers/image.controler');
-const user = require('../controlers/user.controler')
+const user = require('../controlers/user.controler');
+const logger = log4js.getLogger('logger');
 
-const logger = log4js.getLogger();
-logger.level = "debug";
-
-//===========================User================================
-router.post('/users/register', function (req, res) {
+//=========================== User Route ================================
+router.post('/users/register', async function (req, res) {
 
     const { errors, isValid } = validateRegisterInput(req.body);
 
@@ -26,8 +24,7 @@ router.post('/users/register', function (req, res) {
         email: req.body.email,
         password: req.body.password,
     }
-    const response = user.addUser(newUser)
-    req.session.user = "user.dataValues";
+    const response = await user.addUser(newUser);
     res.json(response);
 });
 
@@ -39,64 +36,50 @@ router.post('/users/login', async (req, res) => {
     }
 
     const email = req.body.email;
+    req.session.email = email;
     const password = req.body.password;
-    const response = await user.loginUser(email, password);
-    res.json(response);
-
+    const response = await user.loginUser(email, password)
+    if (response.status === 200) {
+        logger.info(response);
+        res.status(200).end('Ok')
+    } else {
+        logger.error(response);
+        res.status(400).end('Incorrect email or password');
+    }
 });
 
 router.post('/users/logout', (req, res) => {
-    if (req.session && req.cookies["connect.sid"]) {
-        const response = user.logoutUser(req.body.email);
-        res.clearCookie('connect.sid').status(200).send(response);
-    } else {
-        res.status(200).end();
-    }
+    const response = user.logoutUser(req.body.email);
+    res.status(200).json(response);
 });
 
-//============================Image============================================
+//============================ Image Route ============================================
 router.route('/upload/image').get(function (req, res) {
-    if (req.session && req.cookies["connect.sid"]) {
-        const { pageNumber, size } = req.query;
-        let response;
-        if (pageNumber <= 0) {
-            logger.error('invalid page number, should start with 1');
-            response = { "error": true, "message": "invalid page number, should start with 1" };
-        } else {
-            logger.info('mages sending')
-            response = image.findImage(pageNumber, size);
-        }
-        response.then(response => {
-            return res.json(response);
-        })
+    const { pageNumber, size } = req.query;
+    let response;
+    if (pageNumber <= 0) {
+        logger.error('invalid page number, should start with 1');
+        response = { "error": true, "message": "invalid page number, should start with 1" };
     } else {
-        logger.error(req.session);
-        logger.error(req.cookies["connect.sid"]);
-        logger.info('status: 403');
-        res.status(403);
-        res.end();
+        logger.info('images sending')
+        response = image.findImage(pageNumber, size);
     }
+    response.then(response => {
+        return res.json(response);
+    })
 })
-    .post(function (req, res) {    
-        if (req.session && req.cookies["connect.sid"]) {
-            const response = image.addImage(req, res);
-            logger.info('Image successfully save')
-            return res.json(response);
-        } else {
-            logger.error(req.session);
-            logger.error(req.cookies["connect.sid"]);
-            logger.info('status: 403')
-            res.status(403);
-            res.end();
-        }
+    .post(function (req, res) {
+        const response = image.addImage(req, res);
+        logger.info('Image successfully save')
+        return res.json(response);
     })
     .delete(function (req, res) {
         //delete file
 
     });
 
-//======================Audio============================================
-router.get('/upload/audio', async function (req, res) {
+//====================== Audio Route ============================================
+router.route('/upload/audio').get(async function (req, res) {
     if (req.session && req.cookies["connect.sid"]) {
         const { pageNumber, size } = req.query;
         let response;
@@ -115,22 +98,20 @@ router.get('/upload/audio', async function (req, res) {
         res.status(403);
         res.end();
     }
-});
-
-router.post('/audio', async function (req, res) {
-    if (req.session && req.cookies["connect.sid"]) {
-        const response = audio.addAudio(req, res);
-        logger.info('Audio successfully save')
-        return res.json(response);
-    } else {
-        logger.info('status: 403')
-        res.status(403);
-        res.end();
-    }
-});
-
-router.delete('/audio', function (req, res) {
-    //delete file
-});
+})
+    .post(async function (req, res) {
+        if (req.session && req.cookies["connect.sid"]) {
+            const response = audio.addAudio(req, res);
+            logger.info('Audio successfully save')
+            return res.json(response);
+        } else {
+            logger.info('status: 403')
+            res.status(403);
+            res.end();
+        }
+    })
+    .delete(function (req, res) {
+        //delete file
+    });
 
 module.exports = router;

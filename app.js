@@ -1,45 +1,76 @@
 const cors = require('cors');
 const express = require('express');
-const passport = require('passport');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-require('./configs/mongodb');
-const port = require('./configs/config');
+const connectDb = require('./databases/mongodb');
+const checkUser = require('./middlwares/middlware')
+const port = require('./configs/server.config');
+const configLog = require('./log/log4js');
 const router = require('./routes/route')
+const MongoDBStore = require('connect-mongodb-session')(session);
+const store = new MongoDBStore({
+    uri: 'mongodb://localhost:27017/asset',
+    collection: 'session'
+});
+
+store.on('error', function (error) {
+    console.log(error);
+});
 
 app = express();
-app.use(passport.initialize());
-require('./passport')(passport);
-app.use(cors('*'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser())
 
-app.use(session({
+app.use('/users/login',session({
     secret: 'somerandonstuffs',
     resave: false,
     saveUninitialized: false,
+    store: store,
     cookie: {
-        path: '/upload/images',
-        expires: 1000 * 60 * 60 * 5  //5 hour
-    }
+        maxAge: 1000 * 60 * 60 * 5  //5 hour
+    },
 }));
 
-app.use((req, res, next) => {
-    if (req.cookies && !req.session) {
-        res.clearCookie('connect.sid');     
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5000'];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            var msg = 'The CORS policy for this site does not ' +
+                'allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
     }
-    next();
+}));
+app.use('/', function (req, res, next) {
+    console.log(req);
+
+   if(req.headers.origin === "http://localhost:5000") {
+        console.log("aaa");
+        
+        res.setHeader('Access-Control-Allow-Origin', "http://localhost:5000");
+        res.setHeader('Access-Control-Allow-Credentials', true);
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        next();
+    } else if(req.headers.host === "http://localhost:3000") {
+        res.setHeader('Access-Control-Allow-Origin', "http://localhost:3000");
+        res.setHeader('Access-Control-Allow-Credentials', true);
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        next();
+    }
 });
 
-app.use('/', function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', "http://localhost:8080");
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
+app.use('/upload', checkUser.all)
 
 app.use('/', router);
 app.use('/static', express.static(__dirname + '/public'));
+connectDb().then( () => {
+    configLog();
+    
+   });
 console.log("Server Run On ", port, " Port");
 app.listen(port);

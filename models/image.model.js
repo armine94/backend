@@ -2,12 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const TextFileSchema = new Schema({
+const ImageSchema = new Schema({
     name: {
-        type: String,
-        required: true
-    },
-    src: {
         type: String,
         required: true
     },
@@ -22,12 +18,16 @@ const TextFileSchema = new Schema({
         FileSize: String,
         FilePermissions: String,
         FileTypeExtension: String,
+        ImageWidth: String,
+        ImageHeight: String,
+        ImageSize: String,
+        Megapixels: String,
     },
     description: {
         type: String,
     }
 });
 
-const TextFile = mongoose.model('texts', TextFileSchema);
+const Image = mongoose.model('images', ImageSchema);
 
-module.exports = TextFile;
+module.exports = Image;

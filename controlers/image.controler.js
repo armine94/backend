@@ -1,31 +1,28 @@
-const Image = require('../models/Image.model');
+const metadataKey = require('../configs/metadata.config');
+const Image = require('../models/image.model');
 const Exif = require("simple-exiftool");
 const multer = require('multer');
 const log4js = require('log4js');
+const fs = require('fs');
 
-const logger = log4js.getLogger();
-logger.level = "debug";
-
-let name;
-let path;
-let originalName;
-
+const logger = log4js.getLogger('logger');
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 		cb(null, 'public/images');
 	},
 	filename: function (req, file, cb) {
-		originalName = file.originalname;
-		name = Date.now() + '-' + originalName;
-		cb(null, name);
-		path = "./public/images/" + name;
+		cb(null, file.originalname);
 	}
 })
 
 const upload = multer({ storage: storage }).array('file')
 
-function addImage(req, res) {
+const addImage = function (req, res) {
 	upload(req, res, function (err) {
+		const originalName = req.files[0].originalname;
+		const newName = Date.now() + '-' + originalName;
+		const path = './public/images/';
+
 		if (err instanceof multer.MulterError) {
 			logger.error(`multer.MulterError: ${err}`);
 			return response = { "error": true, "message": err };  // A Multer error occurred when uploading.
@@ -33,73 +30,68 @@ function addImage(req, res) {
 			logger.error(`multer.MulterError: ${err}`);
 			return response = { "error": true, "message": err };   // An unknown error occurred when uploading.
 		}
-		Exif(path, (error, metadata) => {
+
+		//rename uploading image 
+		fs.rename(path + originalName, path + newName, function (err) {
+			if (err) throw err;
+			logger.info('renamed complete');
+		})
+
+		//Generate metadata 
+		let ii = path + newName;
+		Exif(ii, (error, metadata) => {
 			if (error) {
 				logger.error(`Exif error: ${error}`);
+		        return res.status(500).json(error)
 			}
-
-			const key = [];
-			key[1] = "SourceFile";
-			key[2] = "FileName";
-			key[3] = "Directory";
-			key[4] = "FileSize";
-			key[5] = "FilePermissions";
-			key[6] = "FileTypeExtension";
-			key[7] = "ImageWidth";
-			key[8] = "ImageHeight";
-			key[9] = "ImageSize";
-			key[10] = "Megapixels";
-
 			const image = new Image({
 				name: originalName,
-				src: path,
 			})
 
 			if (req.body.description) {
 				image.description = req.body.description;
 			}
-
-			for (let i = 1; i < 11; i++) {
-				image.metadata[key[i]] = metadata[key[i]];
+			const {imageMetadataKey} = metadataKey;
+			for (let i = 0; i < imageMetadataKey.length; i++) {
+				image.metadata[imageMetadataKey[i]] = metadata[imageMetadataKey[i]];
 			}
 			image
 				.save()
 				.then(image => {
+					logger.info(`image file data successfully save ${image}`);
 					return response = { "error": false, "message": "success" };
 				});
 		});
 
-		logger.info("File uploaded");
-		return res.status(200).send(req.file)    // Everything went fine.
 	})
 }
 
-function findImage(pageNumber, size) {
+const findImage = async function (pageNumber, size) {
 	const query = {}
 	query.skip = (pageNumber - 1) * size;
 	query.limit = parseInt(size, 10);//string parse int
 
-	return Image.find({}, {}, query, async function (err, data) {
-	})
-		.then(async (data) => {
-			const description = [];
-			const imageName = [];
-			const metadata = [];
-			const path = [];
-			data && data.length && data.forEach((element, index) => {
-				description.push(element.description);
-				imageName.push(element.name);
-				metadata.push(element.metadata);
-				const pathFile = "http://localhost:54545/static/images/" + element.metadata.FileName;
-				path.push(pathFile);
-			});
-			logger.info(`Images data resolved`)
-			return { error: false, name: imageName, description: description, metadatas: metadata, path: path };
-		})
-		.catch(err => {
-			logger.error(`Error fetching data ${err}`)
-			return { error: true, message: "Error fetching data" };
-		})
+	try {
+		const data = await Image.find({}, {}, query, async function (err, data) {
+		});
+		const description = [];
+		const imageName = [];
+		const metadata = [];
+		const path = [];
+		data && data.length && data.forEach((element) => {
+			description.push(element.description);
+			imageName.push(element.name);
+			metadata.push(element.metadata);
+			const pathFile = "http://localhost:54545/static/images/" + element.metadata.FileName;
+			path.push(pathFile);
+		});
+		logger.info(`Images data resolved`);
+		return { error: false, name: imageName, description: description, metadatas: metadata, path: path };
+	}
+	catch (err) {
+		logger.error(`Error fetching data ${err}`);
+		return { error: true, message: "Error fetching data" };
+	}
 }
 
 module.exports.addImage = addImage;

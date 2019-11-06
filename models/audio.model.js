@@ -2,12 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const ImageSchema = new Schema({
+const AudioSchema = new Schema({
     name: {
-        type: String,
-        required: true
-    },
-    src: {
         type: String,
         required: true
     },
@@ -22,16 +18,12 @@ const ImageSchema = new Schema({
         FileSize: String,
         FilePermissions: String,
         FileTypeExtension: String,
-        ImageWidth: String,
-        ImageHeight: String,
-        ImageSize: String,
-        Megapixels: String,
     },
     description: {
         type: String,
     }
 });
 
-const Image = mongoose.model('images', ImageSchema);
+const Audio = mongoose.model('audios', AudioSchema);
 
-module.exports = Image;
+module.exports = Audio;
