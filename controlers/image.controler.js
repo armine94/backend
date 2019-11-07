@@ -1,9 +1,9 @@
-const metadataKey = require('../configs/metadata.config');
-const Image = require('../models/image.model');
-const Exif = require("simple-exiftool");
+const fs = require('fs');
 const multer = require('multer');
 const log4js = require('log4js');
-const fs = require('fs');
+const Exif = require("simple-exiftool");
+const Image = require('../models/image.model');
+const metadataKey = require('../configs/metadata.config');
 
 const logger = log4js.getLogger('logger');
 const storage = multer.diskStorage({
@@ -42,7 +42,7 @@ const addImage = function (req, res) {
 		Exif(ii, (error, metadata) => {
 			if (error) {
 				logger.error(`Exif error: ${error}`);
-		        return res.status(500).json(error)
+		        return {error: true, message: error};
 			}
 			const image = new Image({
 				name: originalName,

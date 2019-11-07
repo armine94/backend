@@ -1,6 +1,8 @@
 module.exports = {
+	DB: 'mongodb://',
 	IP: 'localhost',
 	PORT: 27017,
-	COLLECTION: 'asset',
+	COLLECTION: 'session',
+	DATABASES: 'asset',
 }
 

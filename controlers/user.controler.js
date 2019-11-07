@@ -1,5 +1,4 @@
 const User = require('../models/user.model');
-const Store = require('../models/store.model');
 const bcrypt = require('bcryptjs');
 const log4js = require('log4js');
 
@@ -21,10 +20,10 @@ function addUser(user) {
                     password: user.password,
                 });
                 return bcrypt.genSalt(10, (err, salt) => {
-                    if (err) console.error('There was an error', err);
+                    if (err) logger.error('There was an error', err);
                     else {
                         return bcrypt.hash(newUser.password, salt, (err, hash) => {
-                            if (err) console.error('There was an error', err);
+                            if (err) logger.error('There was an error', err);
                             else {
                                 newUser.password = hash;
                                 newUser
@@ -69,12 +68,9 @@ const loginUser = function (email, password) {
     } catch (error) {
         return { status: 400, err: error };
     }
-
 }
 
 function logoutUser(email) {
-    Store.deleteOne({ 'session.email': "gevorgyan.armine@inbox.ru" }).exec();
-    User.updateOne({ email }, { token: "" }, { runValidators: true }).exec();
     logger.info('Logout successful');
     return true;
 }
