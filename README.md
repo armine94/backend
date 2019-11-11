@@ -2,10 +2,6 @@ To get you started you can simply clone the repository
 
 git clone https://github.com/armine94/backend
 
-## Attention
-if you use `Mozilla Firefox`, you need install `gecko driver` 
-ypu can `download` here [https://github.com/mozilla/geckodriver/releases]
-
 ## Prerequisites
 you need `git` to `clone` the repository. You can get git from [http://git-scm.com/].
 you need `node`, you can `download` here [https://nodejs.org/en/download/]
