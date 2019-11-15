@@ -3,12 +3,12 @@ const multer = require('multer');
 const log4js = require('log4js');
 const Exif = require("simple-exiftool");
 const Audio = require('../models/audio.model');
-const metadataKey = require('../configs/metadata.config');
+const settings = require('../configs/envSettings.json');
 
 const logger = log4js.getLogger('logger');
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
-		cb(null, 'public/audios');
+		cb(null, settings.multerPath.audio);
 	},
 	filename: function (req, file, cb) {
 		cb(null, file.originalname);
@@ -21,14 +21,14 @@ const addAudio = function (req, res) {
 	upload(req, res, function (err) {
 		const originalName = req.files[0].originalname;
 		const newName = Date.now() + '-' + originalName;
-		const path = './public/audios/';
-
+		const path = settings.path.audio;
+		let response;
 		if (err instanceof multer.MulterError) {
 			logger.error(`multer.MulterError: ${err}`);
-			return response = { "error": true, "message": err };  // A Multer error occurred when uploading.
+			response = { "error": true, "message": err };  // A Multer error occurred when uploading.
 		} else if (err) {
 			logger.error(`multer.MulterError: ${err}`);
-			return response = { "error": true, "message": err };   // An unknown error occurred when uploading.
+			response = { "error": true, "message": err };   // An unknown error occurred when uploading.
 		}
 
 		//rename uploading audio 
@@ -38,31 +38,33 @@ const addAudio = function (req, res) {
 		})
 
 		//Generate metadata 
-		let ii = path + newName;
-		Exif(ii, (error, metadata) => {
+		Exif( path + newName,async (error, metadata) => {
 			if (error) {
 				logger.error(`Exif error: ${error}`);
-		        return {error: true, message: error};
+				response = { error: true, message: error };
 			}
 			const audio = new Audio({
 				name: originalName,
+				audioUrl: settings.staticPath.audio + newName, 
 			})
 
 			if (req.body.description) {
 				audio.description = req.body.description;
 			}
-			const {audioMetadataKey} = metadataKey;
-			for (let i = 0; i < audioMetadataKey.length; i++) {
-				audio.metadata[audioMetadataKey[i]] = metadata[audioMetadataKey[i]];
-			}
-			audio
-				.save()
-				.then(audio => {
-					logger.info(`audio file data successfully save ${audio}`);
-					return response = { "error": false, "message": "success" };
-				});
-		});
 
+			for (let i = 0; i < settings.audioMetadataKey.length; i++) {
+				audio.metadata[settings.audioMetadataKey[i]] = metadata[settings.audioMetadataKey[i]];
+			}
+
+			response = await audio
+			.save()
+			.then(audio => {
+				logger.info(`audio file data successfully save ${audio}`);
+				return { "error": false, "message": "success" };
+			});
+			res.send(response);
+		});
+		
 	})
 }
 
@@ -72,21 +74,24 @@ const findAudio = async function (pageNumber, size) {
 	query.limit = parseInt(size, 10);//string parse int
 
 	try {
-		const data = await Audio.find({}, {}, query, async function (err, data) {
-		});
+		const data = await Audio.find({}, {}, query);
+		const originalName = [];
 		const description = [];
 		const audioName = [];
+		const audioUrl = [];
+		const imageUrl = [];
 		const metadata = [];
-		const path = [];
 		data && data.length && data.forEach((element) => {
-			description.push(element.description);
 			audioName.push(element.name);
 			metadata.push(element.metadata);
-			const pathFile = "http://localhost:54545/static/audios/" + element.metadata.FileName;
-			path.push(pathFile);
+			audioUrl.push(element.audioUrl);
+			imageUrl.push(element.imageUrl);
+			description.push(element.description);
+			originalName.push(element.metadata.FileName);
+
 		});
 		logger.info(`Audios data resolved`);
-		return { error: false, name: audioName, description: description, metadatas: metadata, path: path };
+		return { error: false, name: audioName, originalName: originalName, description: description, metadatas: metadata, imageUrl: imageUrl, audioUrl: audioUrl };
 	}
 	catch (err) {
 		logger.error(`Error fetching data ${err}`);
@@ -94,5 +99,41 @@ const findAudio = async function (pageNumber, size) {
 	}
 }
 
+const updateAudio = async function (data) {
+	return await Audio.updateOne({
+		'metadata.FileName': data.originalName
+	}, { name: data.name, description: data.description }, { runValidators: true }).exec()
+	.then(result => {
+		if(result.ok) {
+			return {error: false, message: "success"};
+		} else {
+			return {error: true, message: "data not found"};
+		}
+	})
+	.catch(error => {
+		return {error: true, message: error};
+	})
+}
+
+const deleteAudio = async function (data) {
+	fs.unlink(settings.path.audio + data, (err) => {
+		if (err) throw err;
+		logger.info(settings.path.audio  + data + ' was deleted');
+	});
+	return await Audio.deleteOne({ 'metadata.FileName': data })
+	.then(result => {
+		if(result.ok) {
+			return {error: false, message: "success"};
+		} else {
+			return {error: true, message: "data not found"};
+		}
+	})
+	.catch(error => {
+		return {error: true, message: error};
+	})
+}
+
 module.exports.addAudio = addAudio;
 module.exports.findAudio = findAudio;
+module.exports.updateAudio = updateAudio;
+module.exports.deleteAudio = deleteAudio;

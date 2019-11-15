@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -20,7 +19,7 @@ const UserSchema = new Schema({
         default: Date.now
     },
     token: {
-      type: String,
+        type: String,
     }
 });
 

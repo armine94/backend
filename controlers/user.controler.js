@@ -4,11 +4,11 @@ const log4js = require('log4js');
 
 const logger = log4js.getLogger('logger');
 
-function addUser(user) {
+addUser = function (user) {
     try {
         return User.findOne({
             email: user.email
-        }).then( res => {
+        }).then(res => {
             if (res) {
                 logger.error('Email already exists');
                 return { status: 400, error: 'Email already exists' }
@@ -26,12 +26,12 @@ function addUser(user) {
                             if (err) logger.error('There was an error', err);
                             else {
                                 newUser.password = hash;
-                                newUser
-                                    .save()
-                                    .then( user => {
-                                        logger.info('User already added')
-                                        return user;
-                                    });
+                                return newUser
+                                .save()
+                                .then(user => {
+                                    logger.info('User already added')
+                                    return { error: false, status: 200 };
+                                });
                             }
                         });
                     }
@@ -39,32 +39,31 @@ function addUser(user) {
             }
         });
     } catch (error) {
-        return { status: 400, error: error};
+        return { status: 400, error: error };
     }
 }
 
 const loginUser = function (email, password) {
     try {
         return User.findOne({ email })
-            .then(user => {
-
-                logger.info(user)
-                if (!user) {
-                    logger.error('User not found');
-                    return { status: 404, error: 'User not found' };
+        .then(user => {
+            logger.info(user)
+            if (!user) {
+                logger.error('User not found');
+                return { status: 404, error: 'User not found' };
+            }
+            return bcrypt.compare(password, user.password)
+            .then(isMatch => {
+                if (isMatch) {
+                    logger.info('Login successful');
+                    return { status: 200, email: user.email };
                 }
-                return bcrypt.compare(password, user.password)
-                    .then(isMatch => {
-                        if (isMatch) {
-                            logger.info('Login successful');
-                            return { status: 200, email: user.email };
-                        }
-                        else {
-                            logger.error('Incorrect Password');
-                            return { status: 400, error: 'Incorrect Password' };
-                        }
-                    });
+                else {
+                    logger.error('Incorrect Password');
+                    return { status: 400, error: 'Incorrect Password' };
+                }
             });
+        });
     } catch (error) {
         return { status: 400, err: error };
     }

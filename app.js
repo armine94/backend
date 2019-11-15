@@ -1,26 +1,26 @@
 const cors = require('cors');
 const express = require('express');
 const router = require('./routes/route');
-const configLog = require('./log/log4js');
+const loggerConfig = require('./log/log4js');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const port = require('./configs/server.config');
-const connectDb = require('./databases/mongodb');
+const connectDB = require('./databases/mongodb');
 const checkUser = require('./middlwares/middlware');
 const corsHaeder = require('./middlwares/corsMiddl');
-const dbConfig = require('./configs/mongodb.config');
-const allowedOrigins = require('./configs/cors.config');
-const sessionConfig = require('./configs/session.config');
+const settings = require('./configs/envSettings.json');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
+const allowedOrigins = process.argv[2] === settings.workingMode.prod ? settings.cors.urlProd : settings.cors.urlDev;
 const store = new MongoDBStore({
-    uri: dbConfig.DB + dbConfig.IP + ':' + dbConfig.PORT+ '/' + dbConfig.DATABASES, 
-    collection: dbConfig.COLLECTION
+    uri: settings.db.DB + settings.db.IP + ':' + settings.db.PORT+ '/' + settings.db.DATABASES, 
+    collection: settings.db.COLLECTION
 });
 
-connectDb().then( () => {
-    configLog();
+connectDB().then( () => {
+    loggerConfig();
+    app.listen(settings.server.port);
+    console.log("Server Run On", settings.server.port, " Port");
 });
 
 app = express();
@@ -31,20 +31,20 @@ app.use(cookieParser())
 app.use('/',corsHaeder.all);
 
 app.use(session({
-    name: sessionConfig.name,
-    secret: sessionConfig.secret,
-    resave: sessionConfig.resave,
-    saveUninitialized: sessionConfig.saveUninitialized,
+    key: settings.session.key,
+    secret: settings.session.secret,
+    resave: settings.session.resave,
+    saveUninitialized: settings.session.saveUninitialized,
     store: store,
     cookie: {
-        maxAge: sessionConfig.maxAge,
-        httpOnly: sessionConfig.httpOnly,
+        maxAge: settings.session.maxAge,
+        httpOnly: settings.session.httpOnly,
     },
 }));
 
 app.use((req, res, next) => {
     if (req.cookies && !req.session) {
-        res.clearCookie(sessionConfig.name);
+        res.clearCookie(settings.session.key);
     }
     next();
 });
@@ -62,8 +62,5 @@ app.use(cors({
 }));
 
 app.use('/upload', checkUser.all)
-
 app.use('/', router);
 app.use('/static', express.static(__dirname + '/public'));
-app.listen(port);
-console.log("Server Run On", port, " Port");

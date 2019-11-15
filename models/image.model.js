@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const Schema = mongoose.Schema;
 
 const ImageSchema = new Schema({
@@ -7,10 +6,20 @@ const ImageSchema = new Schema({
         type: String,
         required: true
     },
+
     date: {
         type: Date,
         default: Date.now
     },
+
+    description: {
+        type: String,
+    },
+
+    imageUrl: {
+        type: String
+    },
+
     metadata: {
         SourceFile: String,
         FileName: String,
@@ -23,9 +32,6 @@ const ImageSchema = new Schema({
         ImageSize: String,
         Megapixels: String,
     },
-    description: {
-        type: String,
-    }
 });
 
 const Image = mongoose.model('images', ImageSchema);

@@ -5,7 +5,7 @@
     "main": "app.js",
     "scripts": {
         "dev": "nodemon app.js  debug",
-        "start": "node app.js off",
+        "start": "node app.js PROD",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -16,6 +16,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "@ffmpeg-installer/ffmpeg": "^1.0.20",
+        "ffmpeg-extract-frames": "^2.0.2",
+        "fluent-ffmpeg": "^2.1.2",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.3",
         "connect-mongodb-session": "^2.2.0",
@@ -23,13 +26,13 @@
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "express-session": "^1.17.0",
-        "log4js": "^5.3.0",
         "mongoose": "^5.2.4",
         "multer": "^1.4.2",
         "simple-exiftool": "^1.1.0",
         "validator": "^10.4.0"
     },
     "devDependencies": {
+        "log4js": "^5.3.0",
         "nodemon": "^1.19.4"
     }
 }
