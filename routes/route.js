@@ -28,7 +28,7 @@ router.route('/upload/image').get(async function (req, res) {
     image.updateImage(req, res)
 })
 .delete(async function (req, res) {
-    image.deleteImage(req.query.originalName);
+    image.deleteImage(req, res);
 })
 
 //====================== Audio Route ============================================
