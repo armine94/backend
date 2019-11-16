@@ -16,9 +16,6 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@ffmpeg-installer/ffmpeg": "^1.0.20",
-        "ffmpeg-extract-frames": "^2.0.2",
-        "fluent-ffmpeg": "^2.1.2",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.3",
         "connect-mongodb-session": "^2.2.0",

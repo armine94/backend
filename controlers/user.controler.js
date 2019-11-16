@@ -4,11 +4,11 @@ const log4js = require('log4js');
 
 const logger = log4js.getLogger('logger');
 
-addUser = function (user) {
+addUser = async function (user) {
     try {
-        return User.findOne({
+        return await User.findOne({
             email: user.email
-        }).then(res => {
+        }).then( res => {
             if (res) {
                 logger.error('Email already exists');
                 return { status: 400, error: 'Email already exists' }
@@ -22,14 +22,14 @@ addUser = function (user) {
                 return bcrypt.genSalt(10, (err, salt) => {
                     if (err) logger.error('There was an error', err);
                     else {
-                        return bcrypt.hash(newUser.password, salt, (err, hash) => {
+                        return  bcrypt.hash(newUser.password, salt, async (err, hash) => {
                             if (err) logger.error('There was an error', err);
                             else {
                                 newUser.password = hash;
-                                return newUser
+                                return await newUser
                                 .save()
                                 .then(user => {
-                                    logger.info('User already added')
+                                    logger.info('User already added', user)
                                     return { error: false, status: 200 };
                                 });
                             }
@@ -73,6 +73,7 @@ function logoutUser(email) {
     logger.info('Logout successful');
     return true;
 }
+
 module.exports.addUser = addUser;
 module.exports.loginUser = loginUser;
 module.exports.logoutUser = logoutUser;

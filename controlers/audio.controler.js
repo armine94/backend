@@ -68,11 +68,18 @@ const addAudio = function (req, res) {
 	})
 }
 
-const findAudio = async function (pageNumber, size) {
+const findAudio = async function (req, res) {
+	const { pageNumber, size } = req.query;
+	let result;
+    if (pageNumber < 1 && size < 1) {
+        logger.error('invalid page number or count of files, those should start with 1');
+		result = { "error": true, "message": "invalid page number or count of files, those should start with 1" };
+		res.status(400).send(result);
+		return;
+	}
 	const query = {}
 	query.skip = (pageNumber - 1) * size;
 	query.limit = parseInt(size, 10);//string parse int
-
 	try {
 		const data = await Audio.find({}, {}, query);
 		const originalName = [];
@@ -91,31 +98,46 @@ const findAudio = async function (pageNumber, size) {
 
 		});
 		logger.info(`Audios data resolved`);
-		return { error: false, name: audioName, originalName: originalName, description: description, metadatas: metadata, imageUrl: imageUrl, audioUrl: audioUrl };
+		result = { error: false, name: audioName, originalName: originalName, description: description, metadatas: metadata, imageUrl: imageUrl, audioUrl: audioUrl };
+		res.status(200).send(result);
 	}
 	catch (err) {
 		logger.error(`Error fetching data ${err}`);
-		return { error: true, message: "Error fetching data" };
+		result = { error: true, message: "Error fetching data" };
+		res.status(400).send(result);
 	}
 }
 
-const updateAudio = async function (data) {
-	return await Audio.updateOne({
+const updateAudio = async function (req, res ) {
+	const data = {
+        originalName: req.body.originalName,
+        name: req.body.newName,
+        description: req.body.newdescription,
+    }
+	let result;
+	Audio.updateOne({
 		'metadata.FileName': data.originalName
 	}, { name: data.name, description: data.description }, { runValidators: true }).exec()
 	.then(result => {
 		if(result.ok) {
-			return {error: false, message: "success"};
+			logger.info("Update audio data success");
+			result = {error: false, message: "success"};
 		} else {
-			return {error: true, message: "data not found"};
+			logger.error("Audio data not found");
+			result = {error: true, message: "data not found"};
 		}
+		res.send(result);
 	})
 	.catch(error => {
-		return {error: true, message: error};
+		logger.error(error)		
+		result = {error: true, message: error};
+		res.send(result);
 	})
 }
 
-const deleteAudio = async function (data) {
+const deleteAudio = async function (req, res) {
+	const data = req.query.originalName;
+	let result;
 	fs.unlink(settings.path.audio + data, (err) => {
 		if (err) throw err;
 		logger.info(settings.path.audio  + data + ' was deleted');
@@ -123,13 +145,18 @@ const deleteAudio = async function (data) {
 	return await Audio.deleteOne({ 'metadata.FileName': data })
 	.then(result => {
 		if(result.ok) {
-			return {error: false, message: "success"};
+			logger.info("Audio data deleted success");
+			result = {error: false, message: "success"};
 		} else {
-			return {error: true, message: "data not found"};
+			logger.error("Audio data  not found");
+			result = {error: true, message: "data not found"};
 		}
+		res.send(result);
 	})
 	.catch(error => {
-		return {error: true, message: error};
+		logger.error(error);
+		result = {error: true, message: error};
+		res.send(result);
 	})
 }
 

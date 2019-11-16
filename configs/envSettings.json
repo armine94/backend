@@ -57,24 +57,6 @@
         "FileTypeExtension"
     ],    
 
-   "videoMetadataKey":  [
-        "SourceFile",
-        "FileName",
-        "Directory",
-        "FileSize",
-        "FilePermissions",
-        "FileTypeExtension"
-    ],
-
-    "docMetadataKey" : [
-        "SourceFile",
-        "FileName",
-        "Directory",
-        "FileSize",
-        "FilePermissions",
-        "FileTypeExtension"
-    ],
-
     "staticPath": {
         "doc": "http://localhost:54545/static/docs/",
         "image": "http://localhost:54545/static/images/",
@@ -94,6 +76,7 @@
         "audioImage": "./public/audios/images/",
         "videoImage": "./public/videos/images/"
     },
+    
     "multerPath": {
         "doc": "public/docs",
         "image": "public/images",

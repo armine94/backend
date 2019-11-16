@@ -2,10 +2,6 @@ To get you started you can simply clone the repository
 
 git clone https://github.com/armine94/backend
 
-## Attention
-if you use `Mozilla Firefox`, you need install `gecko driver` 
-ypu can `download` here [https://github.com/mozilla/geckodriver/releases]
-
 ## Prerequisites
 you need `git` to `clone` the repository. You can get git from [http://git-scm.com/].
 you need `node`, you can `download` here [https://nodejs.org/en/download/]
@@ -42,9 +38,7 @@ The project is preconfigured with a simple development web server. The simplest 
 |  |  └──  envSettings.json.js
 |  ├── controllers - Defines app routes logic.
 |  |  ├──  audio.controlers.js - add, update, find, delete audio file
-|  |  ├──  doc.controlers.js -   add, update, find, delete doc   file
 |  |  ├──  image.controlers.js - add, update, find, delete image file
-|  |  ├──  video.controlers.js - add, update, find, delete video file
 |  |  └──  user.controlers.js -  user registration, login , logout 
 |  ├── databases - Databases connection.
 |  |  └──  mongodb.js 
@@ -55,15 +49,11 @@ The project is preconfigured with a simple development web server. The simplest 
 |  |  └──  middlware.js - check authorization
 |  ├── models - Contains database models.
 |  |  ├──  audio.model.js - define audio file model
-|  |  ├──  doc.model.js   - define doc   file model
 |  |  ├──  image.model.js - define image file model
-|  |  ├──  video.model.js - define video file model
 |  |  └──  user.model.js  - define user model
 |  ├── public - Directory for save and sending files.
 |  |  ├──  audios
-|  |  ├──  images
-|  |  ├──  docs
-|  |  └──  videos
+|  |  └──  images
 |  ├── routes - All routes for different entities in different files.
 |  |  └──  routes.js
 |  ├── validation - Defines requests validation logic.
