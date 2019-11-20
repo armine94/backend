@@ -107,7 +107,7 @@ const findAudio = async function (req, res) {
 	}
 }
 
-const updateAudio = async function (req, res ) {
+const updateAudio = function (req, res ) {
 	const data = {
         originalName: req.body.originalName,
         name: req.body.newName,
@@ -134,14 +134,14 @@ const updateAudio = async function (req, res ) {
 	})
 }
 
-const deleteAudio = async function (req, res) {
+const deleteAudio = function (req, res) {
 	const data = req.query.originalName;
 	let result;
 	fs.unlink(settings.path.audio + data, (err) => {
 		if (err) throw err;
 		logger.info(settings.path.audio  + data + ' was deleted');
 	});
-	return await Audio.deleteOne({ 'metadata.FileName': data })
+	Audio.deleteOne({ 'metadata.FileName': data })
 	.then(result => {
 		if(result.ok) {
 			logger.info("Audio data deleted success");

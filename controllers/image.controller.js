@@ -8,6 +8,9 @@ const settings = require('../configs/envSettings.json');
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
+	if (!fs.existsSync(settings.path.image)){
+		fs.mkdirSync(settings.path.image);
+	}
 		cb(null,  settings.multerPath.image);
 	},
 	filename: function (req, file, cb) {

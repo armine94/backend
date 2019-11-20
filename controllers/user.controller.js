@@ -4,9 +4,9 @@ const settings = require('../configs/envSettings.json');
 const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const log4js = require('log4js');
-const logger = log4js.getLogger('logger');
 
-addUser = function(req, res) {
+const logger = log4js.getLogger('logger');
+const addUser = function(req, res) {
     const { errors, isValid } = validateRegisterInput(req.body);
 
     if(!isValid) {
@@ -38,8 +38,8 @@ addUser = function(req, res) {
                             newUser
                             .save()
                             .then(user => {
-                                logger.info('User already added');
-                                res.json(user)
+                                logger.info('User already added', user);
+                                res.json('User already added');
                             });
                         }
                     });
@@ -74,7 +74,8 @@ const loginUser = function (req, res) {
                 });
             }
             else {
-                errors.password = 'Incorrect Password';
+                logger.error('Incorrect Password or Email');
+                errors.password = 'Incorrect Password or Email';
                 return res.status(400).json(errors);
             }
         });

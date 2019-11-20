@@ -35,11 +35,11 @@ The project is preconfigured with a simple development web server. The simplest 
 ## Project structure
 ├── backend
 |  ├── configs -  Contains application configuration settings such as database configuration, logger configuration,cors                      configuration,session configuration,static path and metadata configurations 
-|  |  └──  envSettings.json.js
+|  |  └──  envSettings.json
 |  ├── controllers - Defines app routes logic.
 |  |  ├──  audio.controlers.js - add, update, find, delete audio file
 |  |  ├──  image.controlers.js - add, update, find, delete image file
-|  |  └──  user.controlers.js -  user registration, login , logout 
+|  |  └──  user.controlers.js  - user registration, login , logout 
 |  ├── databases - Databases connection.
 |  |  └──  mongodb.js 
 |  ├── log - Loggers connection.

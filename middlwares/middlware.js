@@ -4,7 +4,7 @@ const MongoClient = require('mongodb').MongoClient;
 const settings = require('../configs/envSettings.json');
 
 module.exports = {
-    all: async function (req, res, next) {
+    all: function (req, res, next) {
         if (req.session && req.cookies[settings.session.key]) {
             MongoClient.connect(settings.db.DB + settings.db.IP + ':' + settings.db.PORT, { useNewUrlParser: true, useUnifiedTopology: true } ,function (err, db) {
                 if (err) throw err;
