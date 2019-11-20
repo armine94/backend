@@ -1,6 +1,6 @@
-const user = require('../controlers/user.controler');
-const image = require('../controlers/image.controler');
-const audio = require('../controlers/audio.controler');
+const user = require('../controllers/user.controller');
+const image = require('../controllers/image.controller');
+const audio = require('../controllers/audio.controller');
 const express = require('express');
 const router = express.Router();
 

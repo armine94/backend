@@ -24,7 +24,7 @@ const addImage = function (req, res) {
 			const newName = Date.now() + '-' + originalName;
 			const path = settings.path.image;
 			let response;
-			if( !(err instanceof multer.MulterError) ){
+			if(err instanceof multer.MulterError){
 				logger.error(`multer.MulterError: ${err}`);
 				response = { "error": true, "message": err };  // A Multer error occurred when uploading.
 			} else if (err) {
