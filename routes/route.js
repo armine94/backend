@@ -18,7 +18,7 @@ router.post('/users/logout', (req, res) => {
 });
 
 //============================ Image Route ============================================
-router.route('/upload/image').get(async function (req, res) {
+router.route('/asset/image').get(async function (req, res) {
     image.findImage(req, res);
 })
 .post( function (req, res) {
@@ -32,7 +32,7 @@ router.route('/upload/image').get(async function (req, res) {
 })
 
 //====================== Audio Route ============================================
-router.route('/upload/audio').get(async function (req, res) {
+router.route('/asset/audio').get(async function (req, res) {
     audio.findAudio(req, res);
 })
 .post( function (req, res) {

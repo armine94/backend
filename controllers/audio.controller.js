@@ -24,23 +24,23 @@ const addAudio = function (req, res) {
 		const path = settings.path.audio;
 		let response;
 		if (err instanceof multer.MulterError) {
-			logger.error(`multer.MulterError: ${err}`);
+			logger.error(`audio.controller - line 27: multer.MulterError: ${err}`);
 			response = { "error": true, "message": err };  // A Multer error occurred when uploading.
 		} else if (err) {
-			logger.error(`multer.MulterError: ${err}`);
+			logger.error(`audio.controller - line 30: multer.MulterError: ${err}`);
 			response = { "error": true, "message": err };   // An unknown error occurred when uploading.
 		}
 
 		//rename uploading audio 
 		fs.rename(path + originalName, path + newName, function (err) {
 			if (err) throw err;
-			logger.info('renamed complete');
+			logger.info('audio.controller - line 37: renamed complete');
 		})
 
 		//Generate metadata 
 		Exif( path + newName,async (error, metadata) => {
 			if (error) {
-				logger.error(`Exif error: ${error}`);
+				logger.error(`audio.controller - line 43: Exif error: ${error}`);
 				response = { error: true, message: error };
 			}
 			const audio = new Audio({
@@ -59,7 +59,7 @@ const addAudio = function (req, res) {
 			response = await audio
 			.save()
 			.then(audio => {
-				logger.info(`audio file data successfully save ${audio}`);
+				logger.info(`audio.controller - line 62: audio file data successfully save ${audio}`);
 				return { "error": false, "message": "success" };
 			});
 			res.send(response);
@@ -71,7 +71,7 @@ const findAudio = async function (req, res) {
 	const { pageNumber, size } = req.query;
 	let result;
     if (pageNumber < 1 && size < 1) {
-        logger.error('invalid page number or count of files, those should start with 1');
+        logger.error('audio.controller - line 74: invalid page number or count of files, those should start with 1');
 		result = { "error": true, "message": "invalid page number or count of files, those should start with 1" };
 		res.status(400).send(result);
 		return;
@@ -96,12 +96,12 @@ const findAudio = async function (req, res) {
 			originalName.push(element.metadata.FileName);
 
 		});
-		logger.info(`Audios data resolved`);
+		logger.info(`audio.controller - line 99: Audios data resolved`);
 		result = { error: false, name: audioName, originalName: originalName, description: description, metadatas: metadata, imageUrl: imageUrl, audioUrl: audioUrl };
 		res.status(200).send(result);
 	}
 	catch (err) {
-		logger.error(`Error fetching data ${err}`);
+		logger.error(`audio.controller - line 104: Error fetching data ${err}`);
 		result = { error: true, message: "Error fetching data" };
 		res.status(400).send(result);
 	}
@@ -119,16 +119,16 @@ const updateAudio = function (req, res ) {
 	}, { name: data.name, description: data.description }, { runValidators: true }).exec()
 	.then(result => {
 		if(result.ok) {
-			logger.info("Update audio data success");
+			logger.info("audio.controller - line 122: Update audio data success");
 			result = {error: false, message: "success"};
 		} else {
-			logger.error("Audio data not found");
+			logger.error("audio.controller - line 125: Audio data not found");
 			result = {error: true, message: "data not found"};
 		}
 		res.send(result);
 	})
 	.catch(error => {
-		logger.error(error)		
+		logger.error("audio.controller - line 131: ", error)		
 		result = {error: true, message: error};
 		res.send(result);
 	})
@@ -139,21 +139,21 @@ const deleteAudio = function (req, res) {
 	let result;
 	fs.unlink(settings.path.audio + data, (err) => {
 		if (err) throw err;
-		logger.info(settings.path.audio  + data + ' was deleted');
+		logger.info(`audio.controller - line 142: ${settings.path.audio} ${data} was deleted`);
 	});
 	Audio.deleteOne({ 'metadata.FileName': data })
 	.then(result => {
 		if(result.ok) {
-			logger.info("Audio data deleted success");
+			logger.info("audio.controller - line 147: Audio data deleted success");
 			result = {error: false, message: "success"};
 		} else {
-			logger.error("Audio data  not found");
+			logger.error("audio.controller - line 150: Audio data  not found");
 			result = {error: true, message: "data not found"};
 		}
 		res.send(result);
 	})
 	.catch(error => {
-		logger.error(error);
+		logger.error("audio.controller - line 156: ", error);
 		result = {error: true, message: error};
 		res.send(result);
 	})

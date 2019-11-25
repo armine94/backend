@@ -22,12 +22,13 @@
     },
 
     "session": {
-        "key": "assetManager",
+        "name": "assetManager",
+        "key": "test",
         "secret": "somerandonstuffs",
         "resave": true,
         "httpOnly": true,
-        "saveUninitialized": true,
-        "maxAge": 86400000 
+        "saveUninitialized": false,
+        "maxAge": 18000000
     },
     
     "workingMode": {

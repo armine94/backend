@@ -16,7 +16,7 @@ const addUser = function(req, res) {
         email: req.body.email
     }).then(user => {
         if(user) {
-            logger.error("Email already exists");
+            logger.error("user.controller - line 19: Email already exists");
             return res.status(400).json({
                 email: 'Email already exists'
             });
@@ -29,16 +29,16 @@ const addUser = function(req, res) {
             });
 
             bcrypt.genSalt(10, (err, salt) => {
-                if(err) logger.error('There was an error', err);
+                if(err) logger.error('user.controller - line 32: There was an error', err);
                 else {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
-                        if(err) logger.error('There was an error', err);
+                        if(err) logger.error('user.controller - line 35: There was an error', err);
                         else {
                             newUser.password = hash;
                             newUser
                             .save()
                             .then(user => {
-                                logger.info('User already added', user);
+                                logger.info('user.controller - line 41: User already added', user);
                                 res.json('User already added');
                             });
                         }
@@ -52,6 +52,7 @@ const addUser = function(req, res) {
 const loginUser = function (req, res) {
     const { errors, isValid } = validateLoginInput(req.body);
     if(!isValid) {
+        logger.error("user.controller - line 55: Invalid login or password");
         return res.status(400).json(errors);
     }
 
@@ -61,20 +62,22 @@ const loginUser = function (req, res) {
     User.findOne({email})
     .then(user => {
         if(!user) {
-            errors.email = 'User not found'
+            errors.email = 'User not found';
+            logger.error("user.controller - line 66: User not found");
             return res.status(404).json(errors);
         }
         bcrypt.compare(password, user.password)
         .then(isMatch => {
             if (isMatch) {
-                logger.info('Login successful');
+                req.session.email = user.email;
+                logger.info('user.controller - line 73: Login successful');
                 res.json({
                     success: true,
                     email: user.email
                 });
             }
             else {
-                logger.error('Incorrect Password or Email');
+                logger.error('user.controller - line 80: Incorrect Password or Email');
                 errors.password = 'Incorrect Password or Email';
                 return res.status(400).json(errors);
             }
@@ -83,18 +86,9 @@ const loginUser = function (req, res) {
 }
 
 const logoutUser = function (req, res) {
-    if (req.session) {
-        req.session.destroy(error => {
-            req.session = null;
-            if (error) {
-                logger.error(error);
-                return next(error);
-            }
-            res.clearCookie(settings.session.key);
-            logger.info('Logout successful');
-            res.status(200).send("Ok");
-        });
-    }
+    res.clearCookie(settings.session.name);
+    logger.info('user.controller - line 90: Logout successful');
+    res.status(200).send("Ok");
 }
 
 module.exports.addUser = addUser;

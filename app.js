@@ -14,7 +14,8 @@ const MongoDBStore = require('connect-mongodb-session')(session);
 const allowedOrigins = process.argv[2] === settings.workingMode.prod ? settings.cors.urlProd : settings.cors.urlDev;
 const store = new MongoDBStore({
     uri: settings.db.DB + settings.db.IP + ':' + settings.db.PORT+ '/' + settings.db.DATABASES, 
-    collection: settings.db.COLLECTION
+    collection: settings.db.COLLECTION,
+    clear_interval: settings.session.maxAge
 });
 
 connectDB().then( () => {
@@ -30,15 +31,15 @@ app.use(cookieParser())
 
 app.use('/',corsHaeder.all);
 
-app.use(session({
-    key: settings.session.key,
-    secret: settings.session.secret,
+app.use('/users/login',session({
+   key: settings.session.name,
+   secret: settings.session.secret,
     resave: settings.session.resave,
     saveUninitialized: settings.session.saveUninitialized,
     store: store,
     cookie: {
         maxAge: settings.session.maxAge,
-        httpOnly: settings.session.httpOnly,
+        httpOnly: true,
     },
 }));
 
@@ -61,6 +62,7 @@ app.use(cors({
     },
 }));
 
-app.use('/upload', checkUser.all)
+app.use('/asset', checkUser.all);
+app.use('/users/logout', checkUser.logout);
 app.use('/', router);
 app.use('/static', express.static(__dirname + '/public'));
