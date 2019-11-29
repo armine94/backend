@@ -1,0 +1,87 @@
+{
+    "server": {
+        "port": 54545
+    },
+    
+    "db": {
+        "DB": "mongodb://",
+        "IP": "localhost",
+        "PORT": 27017,
+        "DATABASES": "asset",
+        "COLLECTION": "session"
+    },
+
+    "cors": {
+        "urlProd": "http://localhost:5000",
+        "urlDev": "http://localhost:3000" 
+    },
+    
+    "logger": {
+       "logLevelProd": "off",
+       "logLevelDev": "debug"
+    },
+
+    "session": {
+        "name": "assetManager",
+        "key": "test",
+        "secret": "somerandonstuffs",
+        "resave": true,
+        "httpOnly": true,
+        "saveUninitialized": false,
+        "maxAge": 18000000
+    },
+    
+    "workingMode": {
+        "prod": "PROD",
+        "dev": "DEV"
+    },
+
+    "imageMetadataKey":  [
+        "SourceFile",
+        "FileName",
+        "Directory",
+        "FileSize",
+        "FilePermissions",
+        "FileTypeExtension",
+        "ImageWidth",
+        "ImageHeight",
+        "ImageSize",
+        "Megapixels"
+    ],
+
+    "audioMetadataKey":  [
+        "SourceFile",
+        "FileName",
+        "Directory",
+        "FileSize",
+        "FilePermissions",
+        "FileTypeExtension"
+    ],    
+
+    "staticPath": {
+        "doc": "http://localhost:54545/static/docs/",
+        "image": "http://localhost:54545/static/images/",
+        "video": "http://localhost:54545/static/videos/",
+        "audio": "http://localhost:54545/static/audios/",
+        "videoImage": "http://localhost:54545/static/videos/images/",
+        "docImage": "http://localhost:54545/static/docs/images/doc.jpg",
+        "audioImage": "http://localhost:54545/static/audios/images/audio.png"
+    },
+
+    "path": {
+        "doc": "./public/docs/",
+        "image": "./public/images/",
+        "audio": "./public/audios/",
+        "video": "./public/videos/",
+        "docImage": "./public/docs/images/",
+        "audioImage": "./public/audios/images/",
+        "videoImage": "./public/videos/images/"
+    },
+    
+    "multerPath": {
+        "doc": "public/docs",
+        "image": "public/images",
+        "audio": "public/audios",
+        "video": "public/videos"
+    }
+}
