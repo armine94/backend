@@ -53,7 +53,7 @@ const loginUser = function (req, res) {
     const { errors, isValid } = validateLoginInput(req.body);
     if(!isValid) {
         logger.error("user.controller - line 55: Invalid login or password");
-        return res.status(400).json(errors);
+        return res.json({error: true, message: errors});
     }
 
     const email = req.body.email;
@@ -64,7 +64,7 @@ const loginUser = function (req, res) {
         if(!user) {
             errors.email = 'User not found';
             logger.error("user.controller - line 66: User not found");
-            return res.status(404).json(errors);
+            return res.json({error: true, message: errors});
         }
         bcrypt.compare(password, user.password)
         .then(isMatch => {
@@ -79,7 +79,7 @@ const loginUser = function (req, res) {
             else {
                 logger.error('user.controller - line 80: Incorrect Password or Email');
                 errors.password = 'Incorrect Password or Email';
-                return res.status(400).json(errors);
+                return res.json({error: true, message: errors});
             }
         });
     });
