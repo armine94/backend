@@ -3,6 +3,10 @@ const settings = require('../configs/envSettings.json');
 const Schema = mongoose.Schema;
 
 const AudioSchema = new Schema({
+    author: {
+        type: String
+    },
+    
     name: {
         type: String,
         required: true
