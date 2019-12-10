@@ -96,7 +96,7 @@ const addVideo = function (req, res) {
 const findVideo = async function (req, res) {
 	const { pageNumber, size } = req.query;
 	let result;
-    if (pageNumber < 1 && size < 1) {
+    if (pageNumber < 0 && size < 0) {
         logger.error('video.controller - line 100: invalid page number or count of files, those should start with 1');
 		result = { "error": true, "message": "invalid page number or count of files, those should start with 1" };
 		res.status(400).send(result);
@@ -104,7 +104,7 @@ const findVideo = async function (req, res) {
     }
     
     const query = {}
-    query.skip = (pageNumber - 1) * size;
+    query.skip = pageNumber > 0 ? (pageNumber - 1) * size: (pageNumber) * size;
     query.limit = parseInt(size, 10);//string parse int
     try {
         const data = await Video.find({}, {}, query);

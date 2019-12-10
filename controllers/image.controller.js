@@ -77,7 +77,7 @@ const addImage = function (req, res) {
 
 const findImage = async function (req, res) {
 	const { pageNumber, size } = req.query;
-	if (pageNumber < 1 && size < 1) {
+	if (pageNumber < 0 && size < 0) {
 		logger.error('image.controller - line 81: invalid page number or count of files, those should start with 1');
 		result = { "error": true, "message": "invalid page number or count of files, those should start with 1" };
 		res.status(400).send(result);
@@ -85,7 +85,7 @@ const findImage = async function (req, res) {
 	}
 	let result;
 	const query = {}
-	query.skip = (pageNumber - 1) * size;
+	query.skip = pageNumber > 0 ? (pageNumber - 1) * size: (pageNumber) * size;
 	query.limit = parseInt(size, 10);//string parse int
 	try {
 		const data = await Image.find({}, {}, query);

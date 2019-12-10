@@ -71,14 +71,15 @@ const addAudio = function (req, res) {
 const findAudio = async function (req, res) {
 	const { pageNumber, size } = req.query;
 	let result;
-    if (pageNumber < 1 && size < 1) {
+    if (pageNumber < 0 && size < 0) {
         logger.error('audio.controller - line 75: invalid page number or count of files, those should start with 1');
 		result = { "error": true, "message": "invalid page number or count of files, those should start with 1" };
 		res.status(400).send(result);
 		return;
 	}
 	const query = {}
-	query.skip = (pageNumber - 1) * size;
+	
+
 	query.limit = parseInt(size, 10);//string parse int
 	try {
 		const data = await Audio.find({}, {}, query);
