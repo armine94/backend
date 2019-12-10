@@ -1,11 +1,11 @@
 const log4js = require('log4js');
 const express = require('express');
 const logger = log4js.getLogger('logger');
-const doc = require('../controlers/doc.controller');
-const user = require('../controlers/user.controller');
-const image = require('../controlers/image.controller');
-const audio = require('../controlers/audio.controller');
-const video = require('../controlers/video.controller');
+const doc = require('../controllers/doc.controller');
+const user = require('../controllers/user.controller');
+const image = require('../controllers/image.controller');
+const audio = require('../controllers/audio.controller');
+const video = require('../controllers/video.controller');
 const router = express.Router();
 
 //=========================== User Route ================================
