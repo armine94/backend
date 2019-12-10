@@ -6,6 +6,9 @@ git clone https://github.com/armine94/backend
 you need `git` to `clone` the repository. You can get git from [http://git-scm.com/].
 you need `node`, you can `download` here [https://nodejs.org/en/download/]
 you need `npm`, you can `install`  npm install npm@latest -g
+you need `libimage-exiftool-perl` - in order to generate `metadata` for files,
+    for ubuntu -> 1)`sudo apt-get update` ; 2)`sudo apt-get install libimage-exiftool-perl`
+    Other OS -> [https://sno.phy.queensu.ca/~phil/exiftool/install.html]
 
 A number of node.js tools is necessary to initialize the project. You must have node.js and its package manager (npm) installed. You can get them from http://nodejs.org/. The tools/modules used in this project are listed in package.json and include express, mongodb and mongoose.
 
