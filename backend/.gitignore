@@ -1,9 +1,0 @@
-# Dependency directories
-node_modules/
-
-#binary
-.jpg
-.png
-.m4a
-.mp3
-.pdf
