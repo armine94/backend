@@ -1,15 +1,19 @@
+const log4js = require('log4js');
+const express = require('express');
+const logger = log4js.getLogger('logger');
+const doc = require('../controllers/doc.controller');
 const user = require('../controllers/user.controller');
 const image = require('../controllers/image.controller');
 const audio = require('../controllers/audio.controller');
-const express = require('express');
+const video = require('../controllers/video.controller');
 const router = express.Router();
 
 //=========================== User Route ================================
-router.post('/users/register', async function (req, res) {
+router.post('/users/register', function (req, res) {
     user.addUser(req, res)
 });
 
-router.post('/users/login', async (req, res) => {
+router.post('/users/login', (req, res) => {
     user.loginUser(req, res);
 });
 
@@ -17,32 +21,68 @@ router.post('/users/logout', (req, res) => {
     user.logoutUser(req, res);
 });
 
+router.post('/users/forgot', (req, res) => {
+    user.forgotEmail(req, res);
+});
+
+router.post('/users/forgotPassword', (req, res) => {
+    user.forgotPassword(req, res);
+});
+
 //============================ Image Route ============================================
-router.route('/asset/image').get(async function (req, res) {
+router.route('/asset/image').get(function (req, res) {
     image.findImage(req, res);
 })
 .post( function (req, res) {
     image.addImage(req, res);
 })
-.put(async function (req, res) {
+.put(function (req, res) {
     image.updateImage(req, res)
 })
-.delete(async function (req, res) {
+.delete(function (req, res) {
     image.deleteImage(req, res);
 })
 
 //====================== Audio Route ============================================
-router.route('/asset/audio').get(async function (req, res) {
+router.route('/asset/audio').get(function (req, res) {
     audio.findAudio(req, res);
 })
 .post( function (req, res) {
     audio.addAudio(req, res);
 })
-.put(async function (req, res) {
+.put(function (req, res) {
     audio.updateAudio(req, res);
 })
-.delete(async function (req, res) {
+.delete(function (req, res) {
     audio.deleteAudio(req, res)
+})
+
+//====================== Video Route ============================================
+router.route('/asset/video').get(function (req, res) {
+    video.findVideo(req, res);   
+})
+.post(function (req, res) {
+    video.addVideo(req, res);
+})
+.put(function (req, res) {
+    video.updateVideo(req, res);
+})
+.delete(function (req, res) {
+    video.deleteVideo(req, res);   
+})
+
+//====================== Doc File Route ============================================
+router.route('/asset/doc').get( function (req, res) {
+    doc.findDocFile(req, res);   
+})
+.post( function (req, res) {
+    doc.addDocFile(req, res);
+})
+.put( function (req, res) {
+    doc.updateDocFile(req, res);
+})
+.delete( function (req, res) {
+    doc.deleteDocFile(req, res);
 })
 
 module.exports = router;
